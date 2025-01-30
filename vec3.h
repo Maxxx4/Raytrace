@@ -1,8 +1,4 @@
-#ifndef VEC3_H
-#define VEC3_H
-
-#include <cmath>
-#include <iostream>
+#pragma once
 
 class vec3 {
 public:
@@ -98,5 +94,3 @@ inline vec3 cross(const vec3& u, const vec3& v) {
 inline vec3 unit_vector(const vec3& v) {
     return v / v.length();
 }
-
-#endif
