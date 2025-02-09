@@ -7,6 +7,7 @@ public:
 	double aspect_ratio = 1; // Ratio of width to height
 	int image_width = 100; // Rendered image width in pixels   
     int    samples_per_pixel = 25;   // Count of random samples for each pixel
+	int max_depth = 10; // Maximum recursion depth for ray bouncing
 
     void render(const hittable& scene) {
 
@@ -20,7 +21,7 @@ public:
                 color pixel_color(0, 0, 0);
                 for (int sample = 0; sample < samples_per_pixel; sample++) {
                     ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, scene);
+                    pixel_color += ray_color(r, max_depth, scene);
                 }
                 write_color(std::cout, pixel_samples_scale * pixel_color);
             }
@@ -87,16 +88,21 @@ private:
         return vec3(random_double() - 0.5, random_double() - 0.5, 0);
     }
 
-    color ray_color(const ray& r, const hittable& scene) const {
+    color ray_color(const ray& r, int depth, const hittable& scene) const {
+
+		if (depth <= 0) {
+			return color(0, 0, 0);
+		}
 
         hit_record rec;
 
-        if (scene.hit(r, interval(0, infinity), rec)) {
-            return 0.5 * (rec.normal + color(1, 1, 1));
+        if (scene.hit(r, interval(0.001, infinity), rec)) {
+            vec3 direction = rec.normal + random_unit_vector();/*random_on_hemisphere(rec.normal);*/
+            return 0.5 * ray_color(ray(rec.p, direction), depth - 1, scene); /*(rec.normal + color(1, 1, 1));*/
         }
 
         vec3 unit_direction = unit_vector(r.direction());
         auto a = 0.5 * (unit_direction.y() + 1.0);
-        return (1.0 - a) * color(0.949, 0.125, 0.929) + a * color(1, 0.514, 0.008);
+		return (1.0 - a) * color(0.949, 0.125, 0.929) + a * color(1, 0.514, 0.008); // Background color gradient
     }
 };
