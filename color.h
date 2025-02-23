@@ -2,12 +2,14 @@
 #include "vec3.h"
 #include "interval.h"
 
+
 using color = vec3;
 
 inline double linear_to_gamma(double linear_component)
 {
     if (linear_component > 0)
-		return std::sqrt(linear_component);   //Inefficient, but simple. Something to look into and change later
+        return std::sqrt(linear_component);
+    // Inefficient, but simple. Something to look into and change later (Linnear Approximation, first order Taylor series)
 
     return 0;
 }
